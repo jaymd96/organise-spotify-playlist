@@ -1,0 +1,6 @@
+venv/
+dev-req.txt
+req.txt
+.vscode
+.cache
+.env
