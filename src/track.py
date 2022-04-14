@@ -35,7 +35,7 @@ def get_all_saved_tracks(client, limit_step=50, max_offset=500) -> Tracks:
 def get_all_playlists(client, limit_step=50, max_offset=500) -> Playlists:
     return _spotify_pagination_helper(
         cls=model.PlaylistsPagingObject,
-        paginated_call=client.current_user_saved_tracks,
+        paginated_call=client.current_user_playlists,
         limit_step=limit_step,
         max_offset=max_offset,
     )
