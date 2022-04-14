@@ -1,5 +1,3 @@
-from functools import partial
-import toolz
 import model
 from typing import List
 
@@ -23,7 +21,7 @@ def _spotify_pagination_helper(cls, paginated_call, limit_step, max_offset):
     return pages
 
 
-def get_all_saved_tracks(client, limit_step=50, max_offset=500) -> Tracks:
+def get_all_saved_tracks(client, limit_step=50, max_offset=5000) -> Tracks:
     return _spotify_pagination_helper(
         cls=model.PlaylistTracksPagingObject,
         paginated_call=client.current_user_saved_tracks,
