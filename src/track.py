@@ -1,6 +1,6 @@
 import model
 from typing import List
-
+import toolz
 
 Track = model.TrackObject
 Tracks = List[Track]
@@ -8,6 +8,15 @@ PlaylistTrack = model.PlaylistTrackObject
 PlaylistTracks = List[PlaylistTrack]
 Playlist = model.SimplifiedPlaylistObject
 Playlists = List[Playlist]
+
+
+def user_playlist_replace_tracks(client, playlist, tracks):
+    map(
+        lambda track_ids: client.user_playlist_replace_tracks(
+            client.user_id, playlist.id, track_ids
+        ),
+        toolz.partition_all(100, toolz.pluck("id", map(vars, tracks))),
+    )
 
 
 def _spotify_pagination_helper(cls, paginated_call, limit_step, max_offset):
