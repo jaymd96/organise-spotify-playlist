@@ -1,8 +1,8 @@
-import client
 import toolz
 from track import (
     get_all_saved_tracks,
     get_all_playlists,
+    user_playlist_replace_tracks,
 )
 import model
 import functools
@@ -40,15 +40,15 @@ organise_playlist_by_year_month = functools.partial(
 
 
 def make_playlists(client, organiser):
-    user_playlists = get_all_playlists(client.user)
-    grouped_tracks = organiser(get_all_saved_tracks(client.user))
+    user_playlists = get_all_playlists(client)
+    grouped_tracks = organiser(get_all_saved_tracks(client))
 
     for playlist_name, tracks in grouped_tracks.items():
         if search_existing_playlist(user_playlists, playlist_name):
             playlist = search_existing_playlist(user_playlists, playlist_name)
         else:
-            playlist_response = client.user.user_playlist_create(
-                client.get_user_id(client.user),
+            playlist_response = client.user_playlist_create(
+                client.user_id,
                 playlist_name,
                 public=False,
                 collaborative=False,
@@ -56,7 +56,4 @@ def make_playlists(client, organiser):
             )
             playlist = model.PlaylistObject(**playlist_response)
 
-        track_ids = [t.id for t in tracks]
-        client.user.user_playlist_replace_tracks(
-            client.get_user_id(client.user), playlist.id, track_ids
-        )
+        user_playlist_replace_tracks(client, playlist, tracks)

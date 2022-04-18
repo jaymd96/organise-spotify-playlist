@@ -5,8 +5,12 @@ import spotipy
 env = dotenv.load_dotenv()
 
 scope = ["user-library-read", "playlist-modify-private", "playlist-read-private"]
-user = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
 
-def get_user_id(user):
-    return user.me()["id"]
+class SpotifyClient(spotipy.Spotify):
+    @property
+    def user_id(self):
+        return self.me()["id"]
+
+
+user = SpotifyClient(auth_manager=SpotifyOAuth(scope=scope))
