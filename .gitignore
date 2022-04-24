@@ -2,3 +2,6 @@ venv/
 .vscode
 .cache
 .env
+.flask_session
+.spotify_caches
+node_modules/

@@ -2,3 +2,6 @@ python-dotenv
 spotipy
 toolz
 click
+Flask
+Flask-Session
+flask-cors
