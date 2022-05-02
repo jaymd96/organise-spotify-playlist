@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, url_for, session
-import web
+import views.web as web
 
 static_bp = Blueprint(
     name="static_bp",
@@ -11,6 +11,5 @@ static_bp = Blueprint(
 
 @static_bp.route("/")
 def index():
-    if session.get("uuid"):
-        return web.redirect("/index.html#/go")
-    return web.redirect(url_for(".static", filename="index.html"))
+    return redirect("/api")
+    # return web.redirect(url_for(".static", filename="index.html"))

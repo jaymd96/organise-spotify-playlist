@@ -5,12 +5,12 @@ from flask import session, request, redirect, Blueprint
 from flask_cors import cross_origin
 import spotipy
 
-from client import SpotifyClient
-from auth import AuthHelper, session_cache_path, spotify_scope
+from adaptor.client import SpotifyClient
+from adaptor.auth import AuthHelper, session_cache_path, spotify_scope
 import organise
 import stats
 import track
-import web
+import views.web as web
 
 api_bp = Blueprint(name="api-bp", import_name=__name__, url_prefix="/api")
 
@@ -19,7 +19,7 @@ api_bp = Blueprint(name="api-bp", import_name=__name__, url_prefix="/api")
 @api_bp.route("/callback/")
 def callback():
     print(request.url_rule.rule)
-    return web.redirect(f"/api?{request.query_string.decode()}")
+    return redirect(f"/api?{request.query_string.decode()}")
 
 
 @api_bp.route("/")
@@ -37,49 +37,31 @@ def index():
 
     if not auth_manager.validate_token:
         # Step 2. Display sign in link when no token
-        auth_url = auth_manager.auth_url
-        return redirect(auth_url)
+        return redirect(auth_manager.auth_url)
 
-    # Step 4. Signed in, display data
-    spotify = SpotifyClient(auth_manager=auth_manager.auth_manager)
-    params = {
-        "name": spotify.me()["display_name"],
-        "picture": "https://i.pinimg.com/originals/a8/bc/90/a8bc90ea196737604770aaf9c2d56a51.jpg",
-    }
-    params = {
-        **params,
-        **stats.oragnised_stats(
-            organise.organise_playlist_by_year_month(
-                track.get_all_saved_tracks(spotify)
-            )
-        ),
-    }
     return web.redirect("/index.html#/go")
 
 
 @cross_origin()
 @api_bp.route("/playlist")
 def preview_playlists():
-    cache_handler = spotipy.cache_handler.CacheFileHandler(
-        cache_path=session_cache_path()
-    )
 
-    auth_manager = spotipy.oauth2.SpotifyOAuth(
-        scope=spotify_scope,
-        cache_handler=cache_handler,
-        show_dialog=True,
-    )
+    auth_manager = AuthHelper()
 
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+    if not auth_manager.validate_token:
         # Step 2. Display sign in link when no token
-        auth_url = auth_manager.get_authorize_url()
-        return f'<h2><a href="{auth_url}">Sign in</a></h2>'
+        return redirect(auth_manager.auth_url)
 
-    spotify = SpotifyClient(auth_manager=auth_manager)
+    spotify = SpotifyClient(auth_manager=auth_manager.auth_manager)
+    try:
+        user_image = spotify.me()["images"][-1]["url"]
+    except:
+        user_image = "https://i.pinimg.com/originals/a8/bc/90/a8bc90ea196737604770aaf9c2d56a51.jpg"
+
     return {
         "profile": {
             "name": spotify.me()["display_name"],
-            "picture": spotify.me()["images"][-1]["url"],
+            "picture": user_image,
         },
         **stats.oragnised_stats(
             organise.organise_playlist_by_year_month(
@@ -91,22 +73,14 @@ def preview_playlists():
 
 @api_bp.route("/playlist", methods=["PUT"])
 def make_playlists():
-    cache_handler = spotipy.cache_handler.CacheFileHandler(
-        cache_path=session_cache_path()
-    )
 
-    auth_manager = spotipy.oauth2.SpotifyOAuth(
-        scope=spotify_scope,
-        cache_handler=cache_handler,
-        show_dialog=True,
-    )
+    auth_manager = AuthHelper()
 
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
+    if not auth_manager.validate_token:
         # Step 2. Display sign in link when no token
-        auth_url = auth_manager.get_authorize_url()
-        return f'<h2><a href="{auth_url}">Sign in</a></h2>'
+        return redirect(auth_manager.auth_url)
 
-    spotify = SpotifyClient(auth_manager=auth_manager)
+    spotify = SpotifyClient(auth_manager=auth_manager.auth_manager)
     organise.make_playlists(spotify, organise.organise_playlist_by_year_month)
     return f"<h1>playlists organised</h1>"
 

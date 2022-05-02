@@ -8,7 +8,12 @@ export default {
   },
   methods: {
     createPlaylists: async function () {
-      const res = await Spotipy.makePlaylists();
+      this.$refs.btnToggle.innerText = "Creating playlists";
+      this.$refs.btnToggle.disabled = true;
+      await Spotipy.makePlaylists();
+      this.$refs.btnToggle.disabled = false;
+      this.$refs.btnToggle.innerText = "Playlists created";
+      this.$refs.btnToggle.disabled = true;
     },
   },
 };
@@ -26,7 +31,7 @@ export default {
       <b>{{ summary.hours }} hours</b>.
     </h1>
     <!-- Extracting component classes: -->
-    <button @click="createPlaylists" class="btn btn-blue">
+    <button @click="createPlaylists" class="btn btn-blue" ref="btnToggle">
       Organise Spotify
     </button>
   </div>

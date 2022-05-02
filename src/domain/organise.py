@@ -4,7 +4,7 @@ from track import (
     get_all_playlists,
     user_playlist_replace_tracks,
 )
-import model
+import domain.model as model
 import functools
 import logging
 
