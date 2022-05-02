@@ -3,6 +3,7 @@ import os
 
 env = dotenv.load_dotenv()
 
+import log
 from flask import Flask
 from flask_cors import CORS
 from flask_session import Session
@@ -23,7 +24,6 @@ CORS(
     app,
 )
 Session(app)
-
 
 """
 Following lines allow application to be run more conveniently with

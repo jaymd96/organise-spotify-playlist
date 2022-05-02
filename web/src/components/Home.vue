@@ -1,5 +1,5 @@
 <template>
-  <form action="http://127.0.0.1:8888/">
-    <input type="submit" value="Go to Google" />
+  <form action="http://localhost:8888/api/">
+    <input type="submit" value="Login to spotify" />
   </form>
 </template>

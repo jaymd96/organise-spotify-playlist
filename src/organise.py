@@ -6,6 +6,9 @@ from track import (
 )
 import model
 import functools
+import logging
+
+logger = logging.getLogger()
 
 ###
 # HELPERS
@@ -42,6 +45,9 @@ organise_playlist_by_year_month = functools.partial(
 def make_playlists(client, organiser):
     user_playlists = get_all_playlists(client)
     grouped_tracks = organiser(get_all_saved_tracks(client))
+    logger.info(
+        f"Creating Playlists: { {name:len(count) for name, count in grouped_tracks.items()} }"
+    )
 
     for playlist_name, tracks in grouped_tracks.items():
         if search_existing_playlist(user_playlists, playlist_name):

@@ -5,3 +5,5 @@ venv/
 .flask_session
 .spotify_caches
 node_modules/
+*.log
+dist

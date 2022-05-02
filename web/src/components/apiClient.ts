@@ -2,7 +2,7 @@ import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 
 const instance = axios.create({
-    baseURL: "http://localhost:8888",
+    baseURL: "http://localhost:8888/api",
     timeout: 10000,
     headers: { "X-Custom-Header": "foobar" },
 });
@@ -26,6 +26,10 @@ mock.onGet("/playlist").reply(200, {
 class Spotipy {
     static async playlists() {
         return await instance.get("/playlist").then((resp) => resp.data);
+    }
+
+    static async makePlaylists() {
+        return await instance.put("/playlist")
     }
 }
 

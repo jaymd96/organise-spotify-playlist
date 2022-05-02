@@ -10,6 +10,7 @@ from auth import AuthHelper, session_cache_path, spotify_scope
 import organise
 import stats
 import track
+import web
 
 api_bp = Blueprint(name="api-bp", import_name=__name__, url_prefix="/api")
 
@@ -18,7 +19,7 @@ api_bp = Blueprint(name="api-bp", import_name=__name__, url_prefix="/api")
 @api_bp.route("/callback/")
 def callback():
     print(request.url_rule.rule)
-    return redirect(f"/api?{request.query_string.decode()}")
+    return web.redirect(f"/api?{request.query_string.decode()}")
 
 
 @api_bp.route("/")
@@ -32,7 +33,7 @@ def index():
     if request.args.get("code"):
         # Step 3. Being redirected from Spotify auth page
         auth_manager.get_access_token(request.args.get("code"))
-        return redirect("/index.html#/go")
+        return web.redirect("/index.html#/go")
 
     if not auth_manager.validate_token:
         # Step 2. Display sign in link when no token
@@ -53,7 +54,7 @@ def index():
             )
         ),
     }
-    return redirect("/index.html#/go")
+    return web.redirect("/index.html#/go")
 
 
 @cross_origin()
@@ -88,7 +89,7 @@ def preview_playlists():
     }
 
 
-@api_bp.route("/go")
+@api_bp.route("/playlist", methods=["PUT"])
 def make_playlists():
     cache_handler = spotipy.cache_handler.CacheFileHandler(
         cache_path=session_cache_path()

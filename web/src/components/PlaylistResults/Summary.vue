@@ -1,8 +1,15 @@
 <script lang="ts">
+import Spotipy from "../apiClient";
+
 export default {
   props: {
     summary: Object,
     profile: Object,
+  },
+  methods: {
+    createPlaylists: async function () {
+      const res = await Spotipy.makePlaylists();
+    },
   },
 };
 </script>
@@ -19,7 +26,9 @@ export default {
       <b>{{ summary.hours }} hours</b>.
     </h1>
     <!-- Extracting component classes: -->
-    <button class="btn btn-blue">Organise Spotify</button>
+    <button @click="createPlaylists" class="btn btn-blue">
+      Organise Spotify
+    </button>
   </div>
 </template>
 
