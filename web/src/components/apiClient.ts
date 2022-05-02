@@ -23,7 +23,11 @@ mock.onGet("/playlist").reply(200, {
     ],
 });
  */
+
 class Spotipy {
+    static serverUrl() {
+        return instance.defaults.baseURL
+    }
     static async playlists() {
         return await instance.get("/playlist").then((resp) => resp.data);
     }
