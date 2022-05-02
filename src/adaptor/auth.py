@@ -13,24 +13,22 @@ def session_cache_path():
     return caches_folder + session.get("uuid")
 
 
-class AuthHelper:
-    def __init__(self):
-        self.cache_handler = spotipy.cache_handler.CacheFileHandler(
-            cache_path=session_cache_path()
-        )
-        self.auth_manager = spotipy.oauth2.SpotifyOAuth(
+class SpotipyAuth(spotipy.oauth2.SpotifyOAuth):
+    def __init__(
+        self,
+    ):
+        super().__init__(
             scope=spotify_scope,
-            cache_handler=self.cache_handler,
+            cache_handler=spotipy.cache_handler.CacheFileHandler(
+                cache_path=session_cache_path()
+            ),
             show_dialog=True,
         )
 
-    def get_access_token(self, code: str):
-        return self.auth_manager.get_access_token(code)
-
     @property
-    def validate_token(self):
-        return self.auth_manager.validate_token(self.cache_handler.get_cached_token())
+    def has_token(self):
+        return self.validate_token(self.cache_handler.get_cached_token()) != None
 
     @property
     def auth_url(self):
-        return self.auth_manager.get_authorize_url()
+        return self.get_authorize_url()

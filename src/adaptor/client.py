@@ -12,5 +12,14 @@ class SpotifyClient(spotipy.Spotify):
     def user_id(self):
         return self.me()["id"]
 
+    @property
+    def user_name(self):
+        return self.me()["display_name"]
 
-user = SpotifyClient(auth_manager=SpotifyOAuth(scope=scope))
+    @property
+    def user_image(self):
+        try:
+            image = self.me()["images"][-1]["url"]
+        except IndexError:
+            image = "https://i.pinimg.com/originals/a8/bc/90/a8bc90ea196737604770aaf9c2d56a51.jpg"
+        return image

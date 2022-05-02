@@ -15,10 +15,18 @@ Playlist = model.SimplifiedPlaylistObject
 Playlists = List[Playlist]
 
 
-def user_playlist_replace_tracks(client: spotipy.Spotify, playlist, tracks):
+def user_playlist_replace_tracks(
+    client: spotipy.Spotify, playlist: Playlist, tracks: Tracks
+):
     track_ids = [t.id for t in tracks]
-    client.user_playlist_replace_tracks(client.user_id, playlist.id, [track_ids[0]])
-    for partition in toolz.partition_all(50, track_ids[1:]):
+
+    # replace previous contents with a single track
+    client.user_playlist_replace_tracks(
+        client.user_id, playlist.id, [toolz.first(track_ids)]
+    )
+
+    # append other tracks to playlist, partition because of chunked posts
+    for partition in toolz.partition_all(50, track_ids):
         client.user_playlist_add_tracks(client.user_id, playlist.id, partition)
 
 
